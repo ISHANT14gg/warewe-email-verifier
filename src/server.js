@@ -24,6 +24,11 @@ app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// ─── Root route ──────────────────────────────────────────────────────────────
+app.get('/', (_req, res) => {
+  res.json({ message: 'Welcome to the warewe email verifier API!', docs: 'Use POST /api/verify or GET /api/suggest' });
+});
+
 // ─── POST /api/verify ─────────────────────────────────────────────────────────
 // Body: { "email": "user@example.com" }
 app.post('/api/verify', async (req, res) => {
