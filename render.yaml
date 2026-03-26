@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: warewe-api
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node src/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: FRONTEND_URL
+        sync: false   # set this to your Vercel URL after deploying the frontend

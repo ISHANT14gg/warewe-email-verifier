@@ -1,0 +1,21 @@
+{
+  "name": "email-verification-module",
+  "version": "1.0.0",
+  "description": "Node.js module to verify email addresses via SMTP with typo detection",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "jest --coverage",
+    "start": "node src/server.js",
+    "dev": "node src/server.js"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1"
+  }
+}
