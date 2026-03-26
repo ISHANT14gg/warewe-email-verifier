@@ -9,10 +9,25 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // CORS: allow frontend origin (or all origins in dev)
-const allowedOrigin = process.env.FRONTEND_URL || '*';
+const allowedOrigins = process.env.FRONTEND_URL
+  ? process.env.FRONTEND_URL.split(',').map(u => u.trim().replace(/\/$/, ''))
+  : ['*'];
+
 app.use(
   cors({
-    origin: allowedOrigin,
+    origin: function (origin, callback) {
+      // allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigins.includes('*')) return callback(null, true);
+      
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+
+      // allow any vercel preview deployment
+      if (origin.endsWith('.vercel.app')) return callback(null, true);
+
+      return callback(new Error('origin ' + origin + ' not allowed by CORS'));
+    },
     methods: ['GET', 'POST'],
   })
 );
