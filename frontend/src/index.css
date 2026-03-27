@@ -17,9 +17,11 @@
   --valid:      #22d38a;
   --invalid:    #ff5c72;
   --unknown:    #ffb84d;
+  --smtp:       #38bdf8;
   --valid-bg:   rgba(34,211,138,0.12);
   --invalid-bg: rgba(255,92,114,0.12);
   --unknown-bg: rgba(255,184,77,0.12);
+  --smtp-bg:    rgba(56,189,248,0.10);
 }
 
 html { font-size: 16px; scroll-behavior: smooth; }
@@ -242,6 +244,7 @@ body {
 .badge-valid   { background: var(--valid-bg);   color: var(--valid);   border: 1px solid rgba(34,211,138,0.25); }
 .badge-invalid { background: var(--invalid-bg); color: var(--invalid); border: 1px solid rgba(255,92,114,0.25); }
 .badge-unknown { background: var(--unknown-bg); color: var(--unknown); border: 1px solid rgba(255,184,77,0.25); }
+.badge-smtp    { background: var(--smtp-bg);    color: var(--smtp);    border: 1px solid rgba(56,189,248,0.25); }
 
 .result-email {
   color: var(--muted);
@@ -296,6 +299,19 @@ body {
   border-radius: 10px;
   font-size: 0.82rem;
   color: #ff9aa6;
+  word-break: break-word;
+}
+
+/* smtp info note */
+.smtp-note {
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: rgba(56,189,248,0.07);
+  border: 1px solid rgba(56,189,248,0.2);
+  border-radius: 10px;
+  font-size: 0.82rem;
+  color: #7dd3fc;
+  line-height: 1.6;
   word-break: break-word;
 }
 

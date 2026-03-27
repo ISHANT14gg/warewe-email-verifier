@@ -36,17 +36,17 @@ function getDidYouMean(email) {
   if (typeof email !== 'string' || !email.includes('@')) return null;
 
   const atIndex = email.lastIndexOf('@');
-  const local = email.slice(0, atIndex);
-  const domain = email.slice(atIndex + 1).toLowerCase();
+  const local   = email.slice(0, atIndex);
+  const domain  = email.slice(atIndex + 1).toLowerCase();
 
   let bestMatch = null;
-  let bestDist = Infinity;
+  let bestDist  = Infinity;
 
   for (const known of knownDomains) {
     if (domain === known) return null;
     const dist = levenshtein(domain, known);
     if (dist <= 2 && dist < bestDist) {
-      bestDist = dist;
+      bestDist  = dist;
       bestMatch = known;
     }
   }

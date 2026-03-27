@@ -3,13 +3,14 @@ import './index.css'
 
 const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:3001').replace(/\/$/, '')
 
-const ICONS = { valid: '✅', invalid: '❌', unknown: '⚠️' }
-const BADGE_CLASS = { valid: 'badge-valid', invalid: 'badge-invalid', unknown: 'badge-unknown' }
-const RESULT_LABEL = { valid: 'Valid', invalid: 'Invalid', unknown: 'Unknown' }
+const ICONS = { valid: '✅', invalid: '❌', unknown: '⚠️', smtp_unavailable: '📬' }
+const BADGE_CLASS = { valid: 'badge-valid', invalid: 'badge-invalid', unknown: 'badge-unknown', smtp_unavailable: 'badge-smtp' }
+const RESULT_LABEL = { valid: 'Valid', invalid: 'Invalid', unknown: 'Unknown', smtp_unavailable: 'Domain Valid' }
 
 function ResultCard({ data }) {
-  const result = data.result || 'unknown'
-  const badgeCls = BADGE_CLASS[result] || BADGE_CLASS.unknown
+  // smtp_unavailable means domain + MX are valid but live SMTP is port-blocked
+  const effectiveKey = data.subresult === 'smtp_unavailable' ? 'smtp_unavailable' : (data.result || 'unknown')
+  const badgeCls = BADGE_CLASS[effectiveKey] || BADGE_CLASS.unknown
 
   const details = [
     { key: 'Subresult',       val: data.subresult || '—' },
@@ -22,7 +23,7 @@ function ResultCard({ data }) {
     <div className="result-card">
       <div className="result-header">
         <span className={`status-badge ${badgeCls}`}>
-          {ICONS[result]} {RESULT_LABEL[result]}
+          {ICONS[effectiveKey]} {RESULT_LABEL[effectiveKey]}
         </span>
         <span className="result-email">
           Checked: <strong>{data.email}</strong>
@@ -50,7 +51,13 @@ function ResultCard({ data }) {
         )}
       </div>
 
-      {data.error && (
+      {data.subresult === 'smtp_unavailable' && (
+        <div className="smtp-note">
+          <strong>📬 Domain is configured for email</strong> — MX records confirmed valid.<br />
+          Live mailbox verification requires a dedicated mail server (SMTP port 25/587 is blocked on this cloud host).
+        </div>
+      )}
+      {data.error && data.subresult !== 'smtp_unavailable' && (
         <div className="error-note">⚡ {data.error}</div>
       )}
     </div>
