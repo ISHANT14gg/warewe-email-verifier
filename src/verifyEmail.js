@@ -28,7 +28,7 @@ function getMxRecords(domain) {
   });
 }
 
-function smtpCheck(host, email, timeout = 10000) {
+function smtpCheck(host, email, port = 25, timeout = 10000) {
   return new Promise((resolve) => {
     const socket = new net.Socket();
     let step = 0;
@@ -86,7 +86,7 @@ function smtpCheck(host, email, timeout = 10000) {
       }
     });
 
-    socket.connect(25, host);
+    socket.connect(port, host);
   });
 }
 
@@ -157,7 +157,25 @@ async function verifyEmail(email) {
     });
   }
 
-  const smtpResult = await smtpCheck(mxRecords[0], email);
+  // Try port 587 first (submission port — allowed by most cloud providers),
+  // then fall back to port 25 (blocked by many cloud hosts like Render)
+  let smtpResult = await smtpCheck(mxRecords[0], email, 587);
+
+  if (smtpResult.subresult === 'connection_error' || smtpResult.subresult === 'connection_timeout') {
+    smtpResult = await smtpCheck(mxRecords[0], email, 25);
+  }
+
+  // If SMTP is completely blocked (cloud host restriction), report as unknown with a clear subresult
+  if (smtpResult.subresult === 'connection_error' || smtpResult.subresult === 'connection_timeout') {
+    return finish({
+      result: 'unknown',
+      resultcode: 3,
+      subresult: 'smtp_unavailable',
+      domain,
+      mxRecords,
+      error: 'MX records found but SMTP check could not connect (port 25/587 blocked)',
+    });
+  }
 
   return finish({
     result: smtpResult.result,
@@ -168,5 +186,6 @@ async function verifyEmail(email) {
     error: smtpResult.error,
   });
 }
+
 
 module.exports = { verifyEmail, isValidSyntax, getMxRecords, smtpCheck };
