@@ -31,7 +31,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Handle preflight requests
+app.options(/.*/, cors(corsOptions)); // Handle preflight requests (Express 5 compatible)
 
 
 app.use(express.json());
