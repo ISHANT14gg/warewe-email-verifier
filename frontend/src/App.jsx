@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './index.css'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:3001').replace(/\/$/, '')
 
 const ICONS = { valid: '✅', invalid: '❌', unknown: '⚠️' }
 const BADGE_CLASS = { valid: 'badge-valid', invalid: 'badge-invalid', unknown: 'badge-unknown' }
