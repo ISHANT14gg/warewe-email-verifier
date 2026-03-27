@@ -13,24 +13,26 @@ const allowedOrigins = process.env.FRONTEND_URL
   ? process.env.FRONTEND_URL.split(',').map(u => u.trim().replace(/\/$/, ''))
   : ['*'];
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
-      
-      if (allowedOrigins.includes('*')) return callback(null, true);
-      
-      if (allowedOrigins.includes(origin)) return callback(null, true);
+const corsOptions = {
+  origin: function (origin, callback) {
+    // allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes('*')) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) return callback(null, true);
 
-      // allow any vercel preview deployment
-      if (origin.endsWith('.vercel.app')) return callback(null, true);
+    // allow any vercel preview deployment
+    if (origin.endsWith('.vercel.app')) return callback(null, true);
 
-      return callback(new Error('origin ' + origin + ' not allowed by CORS'));
-    },
-    methods: ['GET', 'POST'],
-  })
-);
+    return callback(new Error('origin ' + origin + ' not allowed by CORS'));
+  },
+  methods: ['GET', 'POST', 'OPTIONS'],
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Handle preflight requests
+
 
 app.use(express.json());
 
