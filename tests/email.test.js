@@ -210,20 +210,23 @@ describe('verifyEmail() SMTP codes', () => {
     expect(result.resultcode).toBe(3);
   });
 
-  test('connection timeout → unknown', async () => {
+  // The new code tries port 587 → port 25, then mailcheck.ai (fails in test env).
+  // When SMTP is blocked but MX exists → domain_valid (honest: domain is real).
+  test('connection timeout on both ports → domain_valid', async () => {
     setupMx();
     net.Socket.mockImplementation(() => createMockSocket({ timeout: true }));
     const result = await verifyEmail('user@example.com');
-    expect(result.result).toBe('unknown');
-    expect(result.subresult).toBe('connection_timeout');
+    expect(result.result).toBe('valid');
+    expect(result.subresult).toBe('domain_valid');
   });
 
-  test('connection refused → unknown', async () => {
+  // Both 587 and 25 are refused, mailcheck.ai unavailable in test env → domain_valid.
+  test('connection refused on both ports → domain_valid', async () => {
     setupMx();
     net.Socket.mockImplementation(() => createMockSocket({ connectError: 'ECONNREFUSED' }));
     const result = await verifyEmail('user@example.com');
-    expect(result.result).toBe('unknown');
-    expect(result.subresult).toBe('connection_error');
+    expect(result.result).toBe('valid');
+    expect(result.subresult).toBe('domain_valid');
   });
 });
 
